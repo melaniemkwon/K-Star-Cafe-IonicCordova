@@ -1,8 +1,8 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController, ActionSheetController, ModalController } from 'ionic-angular';
 import { Dish } from '../../shared/dish';
-import { Comment } from '../../shared/comment';
 import { FavoriteProvider } from '../../providers/favorite/favorite'
+import { CommentPage } from '../../pages/comment/comment';
 
 /**
  * Generated class for the DishdetailPage page.
@@ -27,7 +27,9 @@ export class DishdetailPage {
   constructor(public navCtrl: NavController, public navParams: NavParams,
     @Inject('BaseURL') private BaseURL,
     private toastCtrl: ToastController,
-    private favoriteservice: FavoriteProvider) {
+    private actionSheetCtrl: ActionSheetController,
+    private favoriteservice: FavoriteProvider,
+    public modalCtrl: ModalController) {
       this.dish = navParams.get('dish');
       this.favorite = this.favoriteservice.isFavorite(this.dish.id);
       this.numcomments = this.dish.comments.length;
@@ -50,6 +52,41 @@ export class DishdetailPage {
       position: 'middle',
       duration: 3000
     }).present();
+  }
+
+  presentActionSheet() {
+    let actionSheet = this.actionSheetCtrl.create({
+      title: 'Select Actions',
+      buttons: [
+        {
+          text: 'Add to Favorites',
+          handler: () => {
+            this.addToFavorites();
+          }
+        },{
+          text: 'Add a Comment',
+          handler: () => {
+            this.openComment();
+          }
+        },{
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+    actionSheet.present();
+  }
+
+  openComment() {
+    let modal = this.modalCtrl.create(CommentPage);
+    modal.onDidDismiss(comment => {
+      console.log(comment);
+      this.dish.comments.push(comment);
+    });
+    modal.present();
   }
 
 }
