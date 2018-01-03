@@ -64,6 +64,19 @@ export class RegisterPage {
       );
   }
 
+  getFromLibrary() {
+    const options: CameraOptions = {
+      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY
+    }
+
+    this.camera.getPicture(options)
+      .then((imageData) => {
+        this.image = imageData;
+      },
+      (err) => { console.log('Error obtaining picture') }
+      );
+  }
+
   onSubmit() {
     console.log(this.registerForm.value);
     this.dismiss();
